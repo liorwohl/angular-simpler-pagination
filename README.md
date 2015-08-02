@@ -6,6 +6,9 @@ npm install angular-simpler-pagination --save
   
 then add to your JS (if using browserify): require('angular-simpler-pagination'); 
 
+add to your app code:  
+angular.module('appName', ['angular-simpler-pagination'])
+
 # Usage
 &lt;ul>  
   &lt;li ng-repeat="item in someItemsArray | paginate:10:'xxx'">  

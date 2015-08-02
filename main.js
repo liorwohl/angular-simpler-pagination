@@ -9,7 +9,7 @@ USAGE:
 <paginator for-id="'xxx'"></paginator>
 */
 
-angular.module('myPagination', [])
+angular.module('angular-simpler-pagination', [])
 
   //the filter that is used in ng-repeat to filter the data
   .filter('paginate', function (Paginator) {
