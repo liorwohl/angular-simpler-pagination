@@ -14,8 +14,11 @@ then add to your JS (if using browserify): require('angular-simpler-pagination')
 &lt;/ul>  
 &lt;paginator for-id="'xxx'">&lt;/paginator>
 
+'xxx' is the paginator ID, needed for when you have more then one paginator in the same page  
+10 is the items per page
+
 # Basic CSS
-You need to style the paginator, after using a reset to remove default browser styling from UL LI tags, use something like:
+You need to style the paginator, after using a reset to remove default browser styling from UL LI tags, use something like:  
 .pagination li {  
   display: inline-block;  
   padding: 5px 0;  
@@ -23,9 +26,6 @@ You need to style the paginator, after using a reset to remove default browser s
 .pagination .active {  
   font-weight: bold;  
 }
-
-'xxx' is the paginator ID, needed for when you have more then one paginator in the same page  
-10 is the items per page
 
 # Thanks to..
 http://cacodaemon.de/index.php?id=50 for the ideas and the code I started with.
