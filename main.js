@@ -1,8 +1,10 @@
 //based on: http://cacodaemon.de/index.php?id=50
 /*
 USAGE:
+order by: <a table-sort="'yyy' for-id="'xxx'">Yyy</a> | <a table-sort="'zzz'" for-id="xxx">Zzz</a>
+items:
 <ul>
-  <li ng-repeat="item in items | paginate:10:'xxx'">{{item}}<li>
+  <li ng-repeat="item in items | paginate:10:'xxx':'yyy'">{{item}}<li>
 </ul>
 <paginator for-id="'xxx'"></paginator>
 */
@@ -14,17 +16,20 @@ USAGE:
   angular.module('angular-simpler-pagination', [])
 
     //the filter that is used in ng-repeat to filter the data
-    .filter('paginate', ['Paginator', function (Paginator) {
-      return function (input, rowsPerPage, paginatorId) {
+    .filter('paginate', ['Paginator', '$filter', function (Paginator, $filter) {
+      return function (input, rowsPerPage, paginatorId, orderBy, orderByReverse) {
 
         var paginator = Paginator.getInstance(paginatorId);
 
-        if (!input) {
-          return input;
-        }
+        if (!input) { return input; }
 
-        if (rowsPerPage) {
-          paginator.rowsPerPage = rowsPerPage;
+        if (rowsPerPage) { paginator.rowsPerPage = rowsPerPage; }
+
+        if (paginator.orderBy === null) { paginator.orderBy = orderBy; }
+        if (paginator.orderByReverse === null) { paginator.orderByReverse = orderByReverse; }
+        
+        if (paginator.orderBy) { 
+          input = $filter('orderBy')(input, paginator.orderBy, paginator.orderByReverse); 
         }
         
         paginator.itemCount = input.length;
@@ -52,6 +57,8 @@ USAGE:
         this.rowsPerPage = 10;
         this.itemCount = 0;
         this.maxPagesToShow = 10;
+        this.orderBy = null;
+        this.orderByReverse = null;
 
         //get current page number
         this.getPage = function () {
@@ -147,36 +154,76 @@ USAGE:
 
     //the paginator directive - <paginator for-id="'xxx'"></paginator>
     //will show the links to pages
-    .directive('paginator', ['Paginator', function (Paginator) {
+    .directive('paginator',  function () {
       return {
         restrict: 'E',
-        scope: {
+        bindToController: {
           forId: '='
         },
-        link: function ($scope) {
-          $scope.paginator = Paginator.getInstance($scope.forId);
-        },
+        scope: true,
+        controllerAs: 'paginator',
+        controller: ['Paginator', function (Paginator) {
+          this.paginator = Paginator.getInstance(this.forId);
+        }],
         template: 
-        '  <div class="pagination" ng-if="paginator.pageCount() > 1">' +
+        '  <div class="pagination" ng-if="paginator.paginator.pageCount() > 1">' +
         '    <ul class="inline-list">' +
-        '      <li ng-click="paginator.firstPage()" ng-if="!paginator.isFirstPage() && 0 !== paginator.firstPageToShow()">' +
+        '      <li ng-click="paginator.paginator.firstPage()" ng-if="!paginator.paginator.isFirstPage() && 0 !== paginator.paginator.firstPageToShow()">' +
         '        <a>1</a>' +
         '      </li>' +
-        '      <li ng-click="paginator.perviousPage()" ng-style="paginator.isFirstPage() && {\'visibility\': \'hidden\'}">' +
+        '      <li ng-click="paginator.paginator.perviousPage()" ng-style="paginator.paginator.isFirstPage() && {\'visibility\': \'hidden\'}">' +
         '        <a>&laquo;</a>' +
         '      </li>' +
-        '      <li ng-click="paginator.setPage(i)" ng-repeat="i in paginator.getPagesToShow()" ng-class="{\'active\':paginator.getPage()===i}">' +
+        '      <li ng-click="paginator.paginator.setPage(i)" ng-repeat="i in paginator.paginator.getPagesToShow()" ng-class="{\'active\': paginator.paginator.getPage() === i}">' +
         '        <a>{{i+1}}</a>' +
         '      </li>' +
-        '      <li ng-click="paginator.nextPage()" ng-style="paginator.isLastPage() && {\'visibility\': \'hidden\'}">' +
+        '      <li ng-click="paginator.paginator.nextPage()" ng-style="paginator.paginator.isLastPage() && {\'visibility\': \'hidden\'}">' +
         '        <a>&raquo;</a>' +
         '      </li>' +
-        '      <li ng-click="paginator.lastPage()" ng-if="!paginator.isLastPage() && paginator.pageCount() !== paginator.lastPageToShow()">' +
-        '        <a>{{paginator.pageCount()}}</a>' +
+        '      <li ng-click="paginator.paginator.lastPage()" ng-if="!paginator.paginator.isLastPage() && paginator.paginator.pageCount() !== paginator.paginator.lastPageToShow()">' +
+        '        <a>{{paginator.paginator.pageCount()}}</a>' +
         '      </li>' +
         '    </ul>' +
         '  </div>'
       };
-    }]);
+    })
+
+    //table sort directive - <th for-id="'xxx'" table-sort="yyy">Yyy</th> or... <th for-id="'xxx'" table-sort="['!yyy','zzz']">Yyy, Zzz</th>
+    //will sort the data by the column "yyy"
+    .directive('tableSort', function () {
+      return {
+        restrict: 'A',
+        transclude: true,
+        bindToController: {
+          tableSort: '@',
+          forId: '='
+        },
+        scope: true,
+        controllerAs: 'tableSort',
+        controller: ['Paginator', function (Paginator) {
+
+          this.paginator = Paginator.getInstance(this.forId);
+
+          this.orderByThis = function () {console.log(this.tableSort)
+            if (this.paginator.orderBy === this.tableSort) {
+              this.paginator.orderByReverse = !this.paginator.orderByReverse;
+            } else {
+              this.paginator.orderBy = this.tableSort;
+              this.paginator.orderByReverse = true;
+            }
+          };
+
+          this.isOrderingByThis = function () {
+            return this.tableSort === this.paginator.orderBy;
+          };
+
+          this.isReverse = function () {
+            return this.paginator.orderByReverse;
+          };
+
+        }],
+        template: '<div ng-click="tableSort.orderByThis()" ng-class="{\'orderByDesc\': tableSort.isOrderingByThis() && tableSort.isReverse(), \'orderByAsc\': tableSort.isOrderingByThis() && !tableSort.isReverse()}" ng-transclude></div>'
+      };
+    });
 
 })();
