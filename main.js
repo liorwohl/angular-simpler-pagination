@@ -1,7 +1,7 @@
 //based on: http://cacodaemon.de/index.php?id=50
 /*
 USAGE:
-order by: <a table-sort="'yyy' for-id="'xxx'">Yyy</a> | <a table-sort="'zzz'" for-id="xxx">Zzz</a>
+order by: <a table-sort="'yyy' for-id="'xxx'">Yyy</a> | <a table-sort="'zzz'" for-id="'xxx'">Zzz</a>
 items:
 <ul>
   <li ng-repeat="item in items | paginate:10:'xxx':'yyy'">{{item}}<li>
@@ -204,7 +204,7 @@ items:
 
           this.paginator = Paginator.getInstance(this.forId);
 
-          this.orderByThis = function () {console.log(this.tableSort)
+          this.orderByThis = function () {
             if (this.paginator.orderBy === this.tableSort) {
               this.paginator.orderByReverse = !this.paginator.orderByReverse;
             } else {
