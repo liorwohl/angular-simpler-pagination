@@ -10,8 +10,8 @@ add to your app code:
 angular.module('appName', ['angular-simpler-pagination'])
 
 # Usage
-order by: &lt;a table-sort="'yyy' for-id="'xxx'">Yyy&lt;/a> | &lt;a table-sort="['zzz','!yyy']" for-id="xxx">Zzz and then Yyy desc&lt;/a>
-items:
+order by: &lt;a table-sort="'yyy' for-id="'xxx'">Yyy&lt;/a> | &lt;a table-sort="['zzz','!yyy']" for-id="'xxx'">Zzz and then Yyy desc&lt;/a>  
+items:  
 &lt;ul>  
   &lt;li ng-repeat="item in someItemsArray | paginate:10:'xxx':'yyy'">  
     {{item}}  
@@ -20,7 +20,7 @@ items:
 &lt;paginator for-id="'xxx'">&lt;/paginator>
 
 'xxx' is the paginator ID, needed for when you have more then one paginator in the same page  
-'yyy' or 'zzz' is the sorting column
+'yyy' or 'zzz' is the sorting column  
 10 is the items per page
 
 # Basic CSS
@@ -31,13 +31,13 @@ You need to style the paginator, after using a reset to remove default browser s
 }  
 .pagination .active {  
   font-weight: bold;  
-}
-.orderByDesc {
-  ...
-}
-.orderByAsc {
-  ...
-}
-
+}  
+.orderByDesc {  
+  ...  
+}  
+.orderByAsc {  
+  ...  
+}  
+  
 # Thanks to..
 http://cacodaemon.de/index.php?id=50 for the ideas and the code I started with.
