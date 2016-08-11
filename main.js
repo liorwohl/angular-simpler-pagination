@@ -195,7 +195,7 @@ items:
         restrict: 'A',
         transclude: true,
         bindToController: {
-          tableSort: '@',
+          tableSort: '=',
           forId: '='
         },
         scope: true,
