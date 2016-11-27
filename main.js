@@ -38,7 +38,7 @@ items:
         var to = parseInt((paginator.page + 1) * paginator.rowsPerPage + 1) - 1;
 
         //if the input length changed (data updated) and its shorter then what should be shown in the current page, then go to first page
-        if (to - rowsPerPage > input.length) {
+        if (to - rowsPerPage >= input.length) {
           paginator.firstPage();
         }
 
