@@ -163,7 +163,9 @@ items:
         scope: true,
         controllerAs: 'paginator',
         controller: ['Paginator', function (Paginator) {
-          this.paginator = Paginator.getInstance(this.forId);
+          this.$onInit = function () {
+            this.paginator = Paginator.getInstance(this.forId);
+          };
         }],
         template: 
         '  <div class="pagination" ng-if="paginator.paginator.pageCount() > 1">' +
@@ -201,26 +203,28 @@ items:
         scope: true,
         controllerAs: 'tableSort',
         controller: ['Paginator', function (Paginator) {
+          this.$onInit = function () {
 
-          this.paginator = Paginator.getInstance(this.forId);
+            this.paginator = Paginator.getInstance(this.forId);
 
-          this.orderByThis = function () {
-            if (this.paginator.orderBy === this.tableSort) {
-              this.paginator.orderByReverse = !this.paginator.orderByReverse;
-            } else {
-              this.paginator.orderBy = this.tableSort;
-              this.paginator.orderByReverse = true;
-            }
+            this.orderByThis = function () {
+              if (this.paginator.orderBy === this.tableSort) {
+                this.paginator.orderByReverse = !this.paginator.orderByReverse;
+              } else {
+                this.paginator.orderBy = this.tableSort;
+                this.paginator.orderByReverse = true;
+              }
+            };
+
+            this.isOrderingByThis = function () {
+              return this.tableSort === this.paginator.orderBy;
+            };
+
+            this.isReverse = function () {
+              return this.paginator.orderByReverse;
+            };
+
           };
-
-          this.isOrderingByThis = function () {
-            return this.tableSort === this.paginator.orderBy;
-          };
-
-          this.isReverse = function () {
-            return this.paginator.orderByReverse;
-          };
-
         }],
         template: '<div ng-click="tableSort.orderByThis()" ng-class="{\'orderByDesc\': tableSort.isOrderingByThis() && tableSort.isReverse(), \'orderByAsc\': tableSort.isOrderingByThis() && !tableSort.isReverse()}" ng-transclude></div>'
       };
